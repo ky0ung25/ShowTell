@@ -15,7 +15,14 @@ for a in $ARCHS; do ARCH_FLAGS+=(--arch "$a"); done
 
 echo "Building ShowTell $VERSION for: $ARCHS"
 swift build -c release "${ARCH_FLAGS[@]}"
-BIN="$(swift build -c release "${ARCH_FLAGS[@]}" --show-bin-path)"
+# Where SwiftPM put the binary: .build/apple/Products/Release for multi-arch builds, .build/release otherwise.
+BIN="$(swift build -c release "${ARCH_FLAGS[@]}" --show-bin-path 2>/dev/null || true)"
+for candidate in "$BIN" .build/apple/Products/Release .build/release; do
+    if [ -n "$candidate" ] && [ -f "$candidate/ShowTell" ]; then BIN="$candidate"; break; fi
+done
+[ -f "$BIN/ShowTell" ] || { echo "Couldn't find the built ShowTell binary"; exit 1; }
+echo "Binary: $BIN/ShowTell"
+lipo -info "$BIN/ShowTell" || true
 
 APP=dist/ShowTell.app
 rm -rf dist
