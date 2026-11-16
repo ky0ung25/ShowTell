@@ -10,24 +10,24 @@ cd "$(dirname "$0")"
 VERSION="${VERSION:-0.1.0}"
 BUILD="${BUILD:-1}"
 ARCHS="${ARCHS:-arm64 x86_64}"
-ARCH_FLAGS=()
-for a in $ARCHS; do ARCH_FLAGS+=(--arch "$a"); done
 
+# One architecture at a time, then lipo them together. (A single multi-arch `swift build` goes through
+# SwiftPM's Xcode build path, which exits with an error over some dependencies' language-mode settings.)
 echo "Building ShowTell $VERSION for: $ARCHS"
-swift build -c release "${ARCH_FLAGS[@]}"
-# Where SwiftPM put the binary: .build/apple/Products/Release for multi-arch builds, .build/release otherwise.
-BIN="$(swift build -c release "${ARCH_FLAGS[@]}" --show-bin-path 2>/dev/null || true)"
-for candidate in "$BIN" .build/apple/Products/Release .build/release; do
-    if [ -n "$candidate" ] && [ -f "$candidate/ShowTell" ]; then BIN="$candidate"; break; fi
+BINS=()
+for a in $ARCHS; do
+    swift build -c release --arch "$a"
+    BINS+=("$(swift build -c release --arch "$a" --show-bin-path)")
 done
-[ -f "$BIN/ShowTell" ] || { echo "Couldn't find the built ShowTell binary"; exit 1; }
-echo "Binary: $BIN/ShowTell"
-lipo -info "$BIN/ShowTell" || true
+BIN="${BINS[0]}"
 
 APP=dist/ShowTell.app
 rm -rf dist
 mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
-cp "$BIN/ShowTell" "$APP/Contents/MacOS/ShowTell"
+EXES=()
+for b in "${BINS[@]}"; do EXES+=("$b/ShowTell"); done
+lipo -create "${EXES[@]}" -output "$APP/Contents/MacOS/ShowTell"
+lipo -info "$APP/Contents/MacOS/ShowTell"
 # SwiftPM resource bundles from dependencies, if any.
 for b in "$BIN"/*.bundle; do
     [ -e "$b" ] && cp -R "$b" "$APP/Contents/Resources/"
