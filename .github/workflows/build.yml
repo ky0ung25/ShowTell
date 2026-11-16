@@ -50,7 +50,7 @@ jobs:
         env:
           VERSION: ${{ steps.v.outputs.version }}
           BUILD: ${{ github.run_number }}
-        run: ./build.sh
+        run: bash ./build.sh
       - name: Self-test
         run: macos/dist/ShowTell.app/Contents/MacOS/ShowTell --selftest
       - name: Speech-to-text test (downloads Parakeet)
