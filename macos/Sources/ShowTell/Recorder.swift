@@ -94,7 +94,7 @@ final class Recorder {
         // One final frame so the end state is always included.
         if let img = await captureImage() { save(img, at: duration, score: 1e12) }
 
-        lock.lock(); let all = candidates; lock.unlock()
+        let all = snapshotCandidates()
         let chosen = Recorder.selectFrames(all, max: s.maxFrames)
         let keep = Set(chosen)
         for f in all where !keep.contains(f) { try? FileManager.default.removeItem(at: f.url) }
@@ -187,6 +187,11 @@ final class Recorder {
             try? await Task.sleep(nanoseconds: 500_000_000)
             return nil
         }
+    }
+
+    private func snapshotCandidates() -> [KeyFrame] {
+        lock.lock(); defer { lock.unlock() }
+        return candidates
     }
 
     private func save(_ img: CGImage, at: TimeInterval, score: Double) {
