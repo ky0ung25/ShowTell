@@ -1,0 +1,79 @@
+<Window x:Class="ShowTell.SendDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="ShowTell — send recording"
+        Width="620" SizeToContent="Height"
+        WindowStyle="None" AllowsTransparency="True" Background="Transparent"
+        ResizeMode="NoResize" Topmost="True" ShowInTaskbar="True"
+        WindowStartupLocation="Manual"
+        FontFamily="Segoe UI Variable Text, Segoe UI" Foreground="{StaticResource Ink}">
+    <Border Margin="18" Background="{StaticResource Panel}" CornerRadius="14" BorderBrush="{StaticResource Line}" BorderThickness="1">
+        <Border.Effect>
+            <DropShadowEffect BlurRadius="24" ShadowDepth="4" Opacity="0.22" Color="Black"/>
+        </Border.Effect>
+        <StackPanel Margin="22,18,22,18">
+            <!-- header -->
+            <Grid x:Name="Header" Background="Transparent" Margin="0,0,0,14">
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <Ellipse Width="9" Height="9" Fill="{StaticResource Accent}" Margin="0,0,9,0" VerticalAlignment="Center"/>
+                    <TextBlock Text="Send recording" FontSize="16" FontWeight="SemiBold"/>
+                    <TextBlock x:Name="Meta" Text="" FontSize="13" Foreground="{StaticResource Muted}" Margin="10,1,0,0" VerticalAlignment="Center"/>
+                </StackPanel>
+                <Button x:Name="SettingsBtn" HorizontalAlignment="Right" Margin="0,0,40,0" Style="{StaticResource Ghost}" Height="30" Padding="12,0" FontSize="12" Content="Settings" ToolTip="Change the shortcut keys, microphone and more"/>
+                <Button x:Name="CloseBtn" HorizontalAlignment="Right" Style="{StaticResource Ghost}" Width="32" Height="30" Padding="0" ToolTip="Close (Esc)">
+                    <Path Data="M0,0 L9,9 M9,0 L0,9" Stroke="{StaticResource Muted}" StrokeThickness="1.6" StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
+                </Button>
+            </Grid>
+
+            <!-- frames strip -->
+            <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled" Margin="0,0,0,4">
+                <ItemsControl x:Name="Thumbs">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate><StackPanel Orientation="Horizontal"/></ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                </ItemsControl>
+            </ScrollViewer>
+            <TextBlock Text="Click a frame to leave it out." FontSize="11" Foreground="{StaticResource Muted}" Margin="0,0,0,14"/>
+
+            <!-- target pickers -->
+            <Grid Margin="0,0,0,14">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="200"/>
+                    <ColumnDefinition Width="12"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0">
+                    <TextBlock Text="AI APP" Style="{StaticResource Label}"/>
+                    <ComboBox x:Name="AppBox"/>
+                </StackPanel>
+                <StackPanel Grid.Column="2">
+                    <TextBlock Text="CHAT THREAD" Style="{StaticResource Label}"/>
+                    <ComboBox x:Name="ThreadBox"/>
+                </StackPanel>
+            </Grid>
+
+            <TextBlock Text="INSTRUCTIONS" Style="{StaticResource Label}"/>
+            <Border BorderBrush="{StaticResource Line}" BorderThickness="1" CornerRadius="8" Background="{StaticResource Field}">
+                <Grid>
+                    <TextBox x:Name="Instructions" MinHeight="84" MaxHeight="220" TextWrapping="Wrap" AcceptsReturn="False"
+                             VerticalScrollBarVisibility="Auto" BorderThickness="0" Background="Transparent" FontSize="14" Padding="8,8"/>
+                    <TextBlock x:Name="Placeholder" IsHitTestVisible="False" Margin="12,9,0,0" FontSize="14" Foreground="#A1A1AA"
+                               Text="e.g. Recreate the style of this website as a Next.js page"/>
+                </Grid>
+            </Border>
+
+            <!-- footer -->
+            <Grid Margin="0,14,0,0">
+                <StackPanel Orientation="Vertical" VerticalAlignment="Center" Margin="0,0,180,0">
+                    <TextBlock x:Name="Status" FontSize="12" Foreground="{StaticResource Muted}" TextTrimming="CharacterEllipsis"/>
+                    <TextBlock FontSize="11" Foreground="#A1A1AA" Margin="0,3,0,0">
+                        <Run Text="Enter to paste · Shift+Enter for a new line · Esc to close ·"/>
+                        <Hyperlink x:Name="OpenFolder" Foreground="#71717A">open folder</Hyperlink>
+                    </TextBlock>
+                </StackPanel>
+                <Button x:Name="SendBtn" Content="Paste into chat" Style="{StaticResource Primary}" HorizontalAlignment="Right" Height="36"/>
+            </Grid>
+            <TextBlock x:Name="Error" Foreground="{StaticResource Accent}" FontSize="12" TextWrapping="Wrap" Margin="0,10,0,0" Visibility="Collapsed"/>
+        </StackPanel>
+    </Border>
+</Window>

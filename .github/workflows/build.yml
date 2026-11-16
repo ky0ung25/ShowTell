@@ -1,0 +1,81 @@
+name: Build
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: write # to attach files to a release when a v* tag is pushed
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - name: Version
+        id: v
+        shell: bash
+        run: |
+          if [[ "$GITHUB_REF" == refs/tags/v* ]]; then echo "version=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"; else echo "version=0.1.0" >> "$GITHUB_OUTPUT"; fi
+      - name: Build ShowTell.exe
+        shell: pwsh
+        run: ./windows/build-exe.ps1 -Version ${{ steps.v.outputs.version }}
+      - name: Self-test
+        shell: pwsh
+        run: |
+          $p = Start-Process windows/dist/ShowTell.exe -ArgumentList '--selftest' -Wait -PassThru
+          Get-Content "$env:LOCALAPPDATA\ShowTell\selftest.txt"
+          exit $p.ExitCode
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ShowTell-windows-x64
+          path: windows/dist/ShowTell-windows-x64.zip
+
+  macos:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Version
+        id: v
+        run: |
+          if [[ "$GITHUB_REF" == refs/tags/v* ]]; then echo "version=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"; else echo "version=0.1.0" >> "$GITHUB_OUTPUT"; fi
+      - name: Build ShowTell.app (universal)
+        working-directory: macos
+        env:
+          VERSION: ${{ steps.v.outputs.version }}
+          BUILD: ${{ github.run_number }}
+        run: ./build.sh
+      - name: Self-test
+        run: macos/dist/ShowTell.app/Contents/MacOS/ShowTell --selftest
+      - name: Speech-to-text test (downloads Parakeet)
+        continue-on-error: true
+        timeout-minutes: 20
+        run: |
+          say -o "$RUNNER_TEMP/speech.wav" --data-format=LEI16@16000 "I really like the header on this website. Please copy the font and the blue gradient button."
+          macos/dist/ShowTell.app/Contents/MacOS/ShowTell --selftest "transcribe=$RUNNER_TEMP/speech.wav"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ShowTell-macos
+          path: |
+            macos/dist/ShowTell-macos.dmg
+            macos/dist/ShowTell-macos.zip
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [windows, macos]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          merge-multiple: true
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: artifacts/*
+          generate_release_notes: true

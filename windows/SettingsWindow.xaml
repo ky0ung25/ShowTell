@@ -1,0 +1,106 @@
+<Window x:Class="ShowTell.SettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="ShowTell settings" Width="520" SizeToContent="Height"
+        ResizeMode="NoResize" WindowStartupLocation="CenterScreen"
+        FontFamily="Segoe UI Variable Text, Segoe UI" FontSize="13" Foreground="{StaticResource Ink}" Background="White">
+    <Window.Resources>
+        <Style TargetType="TextBox">
+            <Setter Property="Height" Value="30"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Padding" Value="6,0"/>
+        </Style>
+        <Style TargetType="ComboBox">
+            <Setter Property="Height" Value="30"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+        </Style>
+        <Style x:Key="Row" TargetType="TextBlock">
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="0,0,12,0"/>
+        </Style>
+        <Style x:Key="Section" TargetType="TextBlock" BasedOn="{StaticResource Label}">
+            <Setter Property="Margin" Value="0,18,0,8"/>
+        </Style>
+    </Window.Resources>
+    <StackPanel Margin="24,8,24,20">
+        <TextBlock Text="SHORTCUT" Style="{StaticResource Section}"/>
+        <TextBlock TextWrapping="Wrap" Foreground="{StaticResource Muted}" Margin="0,0,0,10"
+                   Text="Press both keys together, twice in a row, to start recording. Do it again to stop."/>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="160"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="38"/>
+                <RowDefinition Height="38"/>
+                <RowDefinition Height="32"/>
+            </Grid.RowDefinitions>
+            <TextBlock Text="Keys" Style="{StaticResource Row}"/>
+            <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                <Button x:Name="KeyABtn" Style="{StaticResource Ghost}" MinWidth="90"/>
+                <TextBlock Text="+" Margin="10,0" VerticalAlignment="Center" Foreground="{StaticResource Muted}"/>
+                <Button x:Name="KeyBBtn" Style="{StaticResource Ghost}" MinWidth="90"/>
+            </StackPanel>
+            <TextBlock Grid.Row="1" Text="Double-tap window (ms)" Style="{StaticResource Row}"/>
+            <TextBox Grid.Row="1" Grid.Column="1" x:Name="WindowMs" Width="90" HorizontalAlignment="Left"/>
+            <CheckBox Grid.Row="2" Grid.ColumnSpan="2" x:Name="Swallow" VerticalAlignment="Center"
+                      Content="Stop the keys' normal action (e.g. F1 Help) when used as the shortcut"/>
+        </Grid>
+
+        <TextBlock Text="RECORDING" Style="{StaticResource Section}"/>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="160"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="38"/>
+                <RowDefinition Height="38"/>
+                <RowDefinition Height="38"/>
+                <RowDefinition Height="38"/>
+                <RowDefinition Height="32"/>
+                <RowDefinition Height="32"/>
+            </Grid.RowDefinitions>
+            <TextBlock Text="Screen" Style="{StaticResource Row}"/>
+            <ComboBox Grid.Column="1" x:Name="Area"/>
+            <TextBlock Grid.Row="1" Text="Microphone" Style="{StaticResource Row}"/>
+            <ComboBox Grid.Row="1" Grid.Column="1" x:Name="Mic"/>
+            <TextBlock Grid.Row="2" Text="Max frames sent" Style="{StaticResource Row}"/>
+            <TextBox Grid.Row="2" Grid.Column="1" x:Name="MaxFrames" Width="90" HorizontalAlignment="Left"/>
+            <TextBlock Grid.Row="3" Text="Max length (minutes)" Style="{StaticResource Row}"/>
+            <TextBox Grid.Row="3" Grid.Column="1" x:Name="MaxMinutes" Width="90" HorizontalAlignment="Left"/>
+            <CheckBox Grid.Row="4" Grid.ColumnSpan="2" x:Name="DrawCursor" VerticalAlignment="Center" Content="Show the mouse pointer in frames"/>
+            <CheckBox Grid.Row="5" Grid.ColumnSpan="2" x:Name="DeleteAfter" VerticalAlignment="Center" Content="Delete the frames and audio after they are pasted"/>
+        </Grid>
+
+        <TextBlock Text="TRANSCRIPTION (ON THIS PC)" Style="{StaticResource Section}"/>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="160"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="38"/>
+                <RowDefinition Height="38"/>
+            </Grid.RowDefinitions>
+            <TextBlock Text="Speech model" Style="{StaticResource Row}"/>
+            <ComboBox Grid.Column="1" x:Name="Model"/>
+            <TextBlock Grid.Row="1" Text="Language" Style="{StaticResource Row}"/>
+            <TextBox Grid.Row="1" Grid.Column="1" x:Name="LanguageBox" Width="90" HorizontalAlignment="Left"
+                     ToolTip="Whisper multilingual models only: 'auto' or a code like 'es'. Parakeet detects the language itself."/>
+        </Grid>
+
+        <TextBlock Text="GENERAL" Style="{StaticResource Section}"/>
+        <CheckBox x:Name="AutoStart" Content="Start ShowTell when I sign in to Windows"/>
+        <CheckBox x:Name="Sounds" Content="Play a sound when recording starts and stops" Margin="0,8,0,0"/>
+        <TextBlock Margin="0,10,0,0">
+            <Hyperlink x:Name="EditJson">Edit AI app definitions (settings.json)</Hyperlink>
+        </TextBlock>
+
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,22,0,0">
+            <Button x:Name="CancelBtn" Content="Cancel" Style="{StaticResource Ghost}" Margin="0,0,10,0" IsCancel="True"/>
+            <Button x:Name="SaveBtn" Content="Save" Style="{StaticResource Primary}" IsDefault="True"/>
+        </StackPanel>
+    </StackPanel>
+</Window>
