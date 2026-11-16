@@ -16,9 +16,19 @@ Get the latest build from the [Releases](../../releases) page. Builds from every
 | Windows | `ShowTell-windows-x64.zip`: one portable `ShowTell.exe` (no install, no .NET needed) | Windows 10/11, 64-bit |
 | macOS | `ShowTell-macos.dmg` (or `.zip`) | macOS 14 Sonoma or later, Apple silicon or Intel |
 
-**Windows:** unzip, then run `ShowTell.exe`. Windows SmartScreen may warn about an unrecognized app: click **More info → Run anyway**. ShowTell lives in the system tray.
+**Windows:** unzip, then run `ShowTell.exe`. ShowTell lives in the system tray. Unsigned builds make SmartScreen say "Windows protected your PC"; click **More info → Run anyway** (once).
 
-**macOS:** open the .dmg and drag ShowTell to Applications. The app isn't notarized by Apple, so the first time **right-click it → Open → Open** (or run `xattr -dr com.apple.quarantine /Applications/ShowTell.app`). ShowTell lives in the menu bar. On first launch it asks for these permissions and lists them in Settings:
+**macOS:** open the .dmg and drag ShowTell to Applications. ShowTell lives in the menu bar.
+
+Unless the build was notarized (see [SIGNING.md](SIGNING.md)), macOS says *Apple could not verify "ShowTell" is free of malware* the first time. This is because the app isn't registered with Apple; nothing was found in it. To open it once:
+
+1. Click **Done** on the warning (don't move it to the Trash).
+2. Open **System Settings → Privacy & Security**, scroll to **Security**, and next to *"ShowTell" was blocked* click **Open Anyway**. Enter your password.
+3. Click **Open Anyway** again when ShowTell starts.
+
+On macOS 14 Sonoma you can instead right-click ShowTell → **Open** → **Open**. Or, in Terminal: `xattr -dr com.apple.quarantine /Applications/ShowTell.app`.
+
+On first launch ShowTell asks for these permissions and lists them in Settings:
 
 | Permission | Why |
 |---|---|
